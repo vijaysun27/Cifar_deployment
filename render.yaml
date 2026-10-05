@@ -3,7 +3,7 @@ services:
     name: cifar10-classifier
     env: python
     buildCommand: "pip install -r requirements.txt"
-    startCommand: "gunicorn -w 1 --bind 0.0.0.0:$PORT run:app"
+    startCommand: "gunicorn -w 1 --bind 0.0.0.0:$PORT --timeout 120 --preload run:app"
     envVars:
       - key: PYTHON_VERSION
         value: 3.12.3
@@ -15,3 +15,7 @@ services:
         value: models/cifar10_model.keras
       - key: MAX_CONTENT_LENGTH
         value: 16777216
+      - key: OMP_NUM_THREADS
+        value: "1"
+      - key: TF_ENABLE_ONEDNN_OPTS
+        value: "0"

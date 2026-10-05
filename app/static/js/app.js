@@ -183,16 +183,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: formData
             });
 
-            const data = await response.json();
-
-            if (response.ok && data.success) {
-                showResult(data);
+            // Check content type to see if we got JSON
+            const contentType = response.headers.get("content-type");
+            if (contentType && contentType.indexOf("application/json") !== -1) {
+                const data = await response.json();
+                if (response.ok && data.success) {
+                    showResult(data);
+                } else {
+                    showError(data.error || 'Prediction failed.');
+                }
             } else {
-                showError(data.error || 'Prediction failed.');
+                // We got HTML or something else (e.g. 502 Bad Gateway)
+                const text = await response.text();
+                console.error('Non-JSON response:', text);
+                showError(`Server error (${response.status} ${response.statusText}). Please check server logs.`);
             }
         } catch (error) {
             console.error('API Error:', error);
-            showError('Unable to connect to the prediction server.');
+            showError('Unable to connect to the prediction server. Please try again.');
         } finally {
             // Restore button
             predictBtn.disabled = false;

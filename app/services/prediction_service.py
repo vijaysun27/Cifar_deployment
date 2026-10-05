@@ -28,6 +28,12 @@ class PredictionService:
         try:
             self.model = load_model(model_path)
             logger.info("CIFAR-10 model loaded successfully")
+            
+            # Warm up the model to allocate TF buffers before the first user request
+            logger.info("Running warmup prediction...")
+            dummy_image = np.zeros((1, 32, 32, 3), dtype=np.float32)
+            self.model.predict(dummy_image, verbose=0)
+            logger.info("Warmup prediction complete.")
         except Exception as e:
             logger.error(f"Failed to load CIFAR-10 model from {model_path}: {e}")
             raise
