@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="hero">
+    <div class="badge">AI IMAGE CLASSIFICATION</div>
+    <h1>See What the Model Sees.</h1>
+    <p class="subtitle">Upload an image and let our CIFAR-10 deep learning model identify it.</p>
+    <p class="micro-text">10 classes · 32×32 input · TensorFlow / Keras</p>
+</section>
+
+<div class="app-layout">
+    <section class="upload-section">
+        <div class="glass-card upload-card" id="upload-card">
+            <div class="upload-header">
+                <h2>Upload an image</h2>
+                <p class="text-muted">Drag & drop your image here, or browse from your device.</p>
+            </div>
+            
+            <div class="drop-zone" id="drop-zone">
+                <div class="drop-zone-content" id="drop-zone-content">
+                    <svg class="upload-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    <p>Drop your image here</p>
+                    <p>or <button type="button" class="btn-text" id="browse-btn">Browse Files</button></p>
+                    <p class="text-xs text-muted">JPG · PNG · WEBP · Max 5 MB</p>
+                </div>
+                <input type="file" id="file-input" accept="image/jpeg, image/png, image/webp" hidden>
+                
+                <div class="preview-container hidden" id="preview-container">
+                    <img id="image-preview" src="" alt="Image preview">
+                    <div class="file-info">
+                        <span id="file-name">filename.jpg</span>
+                        <span id="file-size" class="text-muted">1.2 MB</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-buttons hidden" id="action-buttons">
+                <button type="button" class="btn-primary" id="predict-btn">Predict Image</button>
+                <button type="button" class="btn-outline" id="clear-btn">Clear</button>
+            </div>
+        </div>
+    </section>
+
+    <section class="result-section hidden" id="result-section">
+        <div class="glass-card result-card">
+            <div class="result-header">
+                <h3>Prediction</h3>
+            </div>
+            
+            <div class="primary-prediction">
+                <div class="predicted-class" id="primary-class">Cat</div>
+                <div class="confidence-text"><span id="primary-confidence">82.40</span>% confidence</div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="primary-progress"></div>
+                </div>
+            </div>
+
+            <div class="low-confidence-warning hidden" id="low-confidence-warning">
+                <h4>Low confidence prediction</h4>
+                <p>The model is not highly confident in this result.</p>
+            </div>
+
+            <div class="top-predictions-container">
+                <h4>Top Predictions</h4>
+                <ul class="top-predictions-list" id="top-predictions-list">
+                    <!-- Dynamic rows go here -->
+                </ul>
+            </div>
+        </div>
+    </section>
+</div>
+
+<section class="info-section" id="about-model">
+    <div class="glass-card info-card">
+        <div class="info-grid">
+            <div class="info-item">
+                <span class="info-label">Model</span>
+                <span class="info-value">CIFAR-10 Classifier</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Framework</span>
+                <span class="info-value">TensorFlow / Keras</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Input</span>
+                <span class="info-value">32 × 32 RGB</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Classes</span>
+                <span class="info-value">10</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Architecture</span>
+                <span class="info-value">Fully Connected Neural Network</span>
+            </div>
+        </div>
+
+        <div class="classes-section">
+            <h4>Recognized Classes</h4>
+            <div class="chips-container">
+                <span class="chip">Airplane</span>
+                <span class="chip">Automobile</span>
+                <span class="chip">Bird</span>
+                <span class="chip">Cat</span>
+                <span class="chip">Deer</span>
+                <span class="chip">Dog</span>
+                <span class="chip">Frog</span>
+                <span class="chip">Horse</span>
+                <span class="chip">Ship</span>
+                <span class="chip">Truck</span>
+            </div>
+        </div>
+
+        <div class="disclaimer">
+            <p>This model is trained on CIFAR-10 and recognizes only 10 predefined classes. Predictions may be incorrect, especially for images that differ significantly from the training data.</p>
+        </div>
+    </div>
+</section>
+{% endblock %}

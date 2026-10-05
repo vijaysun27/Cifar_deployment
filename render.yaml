@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: cifar10-classifier
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn -w 1 --bind 0.0.0.0:$PORT run:app"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.3
+      - key: FLASK_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: MODEL_PATH
+        value: models/cifar10_model.keras
+      - key: MAX_CONTENT_LENGTH
+        value: 16777216
