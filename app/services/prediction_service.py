@@ -1,13 +1,8 @@
 import logging
 import os
 import numpy as np
-import tensorflow as tf
 from tensorflow.keras.models import load_model
 from app.utils.image_utils import preprocess_image
-
-# Restrict TensorFlow thread usage to save memory on free tier
-tf.config.threading.set_inter_op_parallelism_threads(1)
-tf.config.threading.set_intra_op_parallelism_threads(1)
 
 logger = logging.getLogger(__name__)
 
@@ -33,12 +28,6 @@ class PredictionService:
         try:
             self.model = load_model(model_path)
             logger.info("CIFAR-10 model loaded successfully")
-            
-            # Warm up the model to allocate TF buffers before the first user request
-            logger.info("Running warmup prediction...")
-            dummy_image = np.zeros((1, 32, 32, 3), dtype=np.float32)
-            self.model.predict(dummy_image, verbose=0)
-            logger.info("Warmup prediction complete.")
         except Exception as e:
             logger.error(f"Failed to load CIFAR-10 model from {model_path}: {e}")
             raise
@@ -46,7 +35,8 @@ class PredictionService:
     def predict(self, image):
         try:
             processed_image = preprocess_image(image)
-            predictions = self.model.predict(processed_image, verbose=0)
+            # Use direct tensor execution instead of model.predict() which is memory-heavy and slow
+            predictions = self.model(processed_image, training=False).numpy()
             probabilities = predictions[0]
             
             predicted_index = int(np.argmax(probabilities))
