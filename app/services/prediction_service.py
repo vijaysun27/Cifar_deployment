@@ -1,8 +1,13 @@
 import logging
 import os
 import numpy as np
+import tensorflow as tf
 from tensorflow.keras.models import load_model
 from app.utils.image_utils import preprocess_image
+
+# Force single-threaded execution to prevent catastrophic thread thrashing on 0.1 CPU free tiers
+tf.config.threading.set_inter_op_parallelism_threads(1)
+tf.config.threading.set_intra_op_parallelism_threads(1)
 
 logger = logging.getLogger(__name__)
 
