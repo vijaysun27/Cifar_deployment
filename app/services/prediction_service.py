@@ -64,6 +64,9 @@ class PredictionService:
             
             logger.info(f"Prediction completed: {predicted_class} ({confidence:.2f}%)")
             
+            import gc
+            gc.collect()
+            
             return {
                 "predicted_class": predicted_class,
                 "confidence": round(confidence, 2),
