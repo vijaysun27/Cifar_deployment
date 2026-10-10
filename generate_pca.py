@@ -1,6 +1,8 @@
 import numpy as np
-from PIL import Image
+from tensorflow.keras.datasets import cifar10
 from skimage.feature import hog
+from sklearn.decomposition import PCA
+import joblib
 
 def extract_hog_features(images):
     features = []
@@ -34,17 +36,25 @@ def extract_spatial_color_features(images):
         features.append(image_features)
     return np.array(features, dtype=np.float32)
 
-def preprocess_image(image: Image.Image) -> np.ndarray:
-    """Preprocesses a PIL Image for the CIFAR-10 model."""
-    image = image.convert("RGB")
-    image = image.resize((32, 32))
-    image_array = np.array(image).astype("float32")
-    image_array = image_array / 255.0
-    image_array = np.expand_dims(image_array, axis=0) # shape (1, 32, 32, 3)
-    
-    # Extract features
-    hog_feat = extract_hog_features(image_array)
-    color_feat = extract_spatial_color_features(image_array)
-    
-    combined_feat = np.concatenate([hog_feat, color_feat], axis=1)
-    return combined_feat
+if __name__ == "__main__":
+    print("Loading CIFAR-10 data...")
+    (x_train, y_train), (x_test, y_test) = cifar10.load_data()
+
+    x_train = x_train.astype(np.float32) / 255.0
+
+    print("Extracting HOG features...")
+    x_train_hog = extract_hog_features(x_train)
+
+    print("Extracting spatial color features...")
+    x_train_color = extract_spatial_color_features(x_train)
+
+    print("Combining features...")
+    x_train_combined = np.concatenate([x_train_hog, x_train_color], axis=1)
+
+    print("Fitting PCA...")
+    pca = PCA(n_components=0.90, random_state=42)
+    pca.fit(x_train_combined)
+
+    print("Saving PCA model...")
+    joblib.dump(pca, 'models/pca_model.joblib')
+    print("PCA model saved successfully.")

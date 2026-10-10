@@ -29,19 +29,27 @@ class PredictionService:
         if not os.path.exists(model_path):
             logger.error(f"CIFAR-10 model file not found: {model_path}")
             raise FileNotFoundError(f"CIFAR-10 model file not found: {model_path}")
+            
+        pca_path = os.path.join(os.path.dirname(model_path), 'pca_model.joblib')
+        if not os.path.exists(pca_path):
+            logger.error(f"PCA model file not found: {pca_path}")
+            raise FileNotFoundError(f"PCA model file not found: {pca_path}")
         
         try:
             self.model = load_model(model_path)
-            logger.info("CIFAR-10 model loaded successfully")
+            import joblib
+            self.pca = joblib.load(pca_path)
+            logger.info("CIFAR-10 model and PCA loaded successfully")
         except Exception as e:
-            logger.error(f"Failed to load CIFAR-10 model from {model_path}: {e}")
+            logger.error(f"Failed to load models: {e}")
             raise
 
     def predict(self, image):
         try:
             processed_image = preprocess_image(image)
+            pca_features = self.pca.transform(processed_image)
             # Use direct tensor execution instead of model.predict() which is memory-heavy and slow
-            predictions = self.model(processed_image, training=False).numpy()
+            predictions = self.model(pca_features, training=False).numpy()
             probabilities = predictions[0]
             
             predicted_index = int(np.argmax(probabilities))
